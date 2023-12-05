@@ -67,6 +67,33 @@ const handleSubmit = async (e) => {
   const messageDiv = document.getElementById(uniqueId);
 
   loader(messageDiv);
+
+  //fetch
+
+  const response = await fetch("http://localhost:5001/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      prompt: data.get("prompt"),
+    }),
+  });
+  clearInterval(loadInterval);
+  messageDiv.innerHTML = "";
+
+  if (response.ok) {
+    const data = await response.json();
+    const parsedData = data.bot.trim();
+
+    typeText(messageDiv, parsedData);
+  } else {
+    const err = await response.text();
+
+    messageDiv.innerHTML = "something went wrong";
+
+    alert(err);
+  }
 };
 
 form.addEventListener("submit", handleSubmit);
